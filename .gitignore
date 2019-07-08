@@ -1,0 +1,5 @@
+data/
+doc/
+*.zip
+image/
+node_modules/
