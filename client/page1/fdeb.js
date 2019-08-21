@@ -308,6 +308,8 @@ function drawFlights(airports, flights) {
 // Turns a single edge into several segments that can
 // be used for simple edge bundling.
 function generateSegments(nodes, links) {
+ let a = {nodes,links:links.slice(0,5)}
+  console.log( JSON.stringify(a)  )
   // generate separate graph for edge bundling
   // nodes: all nodes including control nodes
   // links: all individual segments (source to target)
