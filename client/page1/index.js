@@ -4,27 +4,31 @@ import $ from 'jquery';
 require("./index.scss");
 
 import * as d3Sankey from 'd3-sankey'
-import * as dataSankey from '../../data/sankey.json'
+// import * as dataSankey from '../../data/sankey.json'
 import  mysankey from './sankey'
 
+import { forceSimulation } from 'd3-force'
 
 // import * as asd from './fdeb'
 
-import {default as fdebForce} from './edge-bundling-force'
+import { default as fdebForce } from './edge-bundling-force'
 const width = 1000
 const height = 1000
 
-function testSankey(argument) {
-	let s = new mysankey(dataSankey)
-	let svg = d3.select('#map-container')
-	       .append('svg')
-	     .attr('width',width)
-	     .attr('height',height)
+require("./fdeb.scss");
 
-	s.renderNodes(svg)
-	s.renderLinks(svg)
-	s.print()
-}
+
+// function testSankey(argument) {
+// 	let s = new mysankey(dataSankey)
+// 	let svg = d3.select('#map-container')
+// 	       .append('svg')
+// 	     .attr('width',width)
+// 	     .attr('height',height)
+
+// 	s.renderNodes(svg)
+// 	s.renderLinks(svg)
+// 	s.print()
+// }
 
 
 
@@ -34,7 +38,7 @@ function testSankey(argument) {
 
 
 
-
+// exit()
 
 
 
@@ -148,12 +152,56 @@ function processData(values) {
   console.log(" removed: " + (old - flights.length) + " flights");
 
   // done filtering flights can draw
-  console.log(airports, flights);
+  // console.log(airports, flights.slice(0,10));
 
-	let simulation = d3.forceSimulation()
-		.force('fdeb' , fdebForce() )
 
-	simulation.nodes(airports).force('fdeb').links(flights)	
+var svg  = d3.select("svg");
+let f =  fdebForce() 
+
+	let simulation = forceSimulation()
+    .alphaDecay(0.1)
+    .force('fdeb' , f )
+    .on('tick',function(){
+        // console.log(m)
+        // console.log(simulation.nodes())
+        svg.selectAll('circle').remove()
+
+      svg.selectAll("circle.airport")
+        .data(simulation.nodes())
+        .enter()
+        .append("circle")
+        .attr("r",  1 )
+        .attr("cx", d => d.x) // calculated on load
+        .attr("cy", d => d.y) // calculated on load
+        .attr("class", "airport")
+
+
+      let line = d3.line()
+        .curve(d3.curveBundle)
+        .x(airport => airport.x)
+        .y(airport => airport.y);
+
+svg.selectAll('line').remove()
+      let links = svg.selectAll("path.flight")
+        .data(f.links())
+        .enter()
+        .append("line")
+        .attr('x1',d=>d.source.x)
+        .attr('y1',d=>d.source.y)
+        .attr('x2',d=>d.target.x)
+        .attr('y2',d=>d.target.y)
+        .style('stroke','black')
+        .style('opacity',0.6)
+
+
+
+    })
+
+
+
+
+
+	simulation.nodes(airports).force('fdeb').links(flights.slice(0,200))	
 
 	simulation.restart()
 

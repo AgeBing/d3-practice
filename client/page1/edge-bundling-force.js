@@ -22,20 +22,23 @@ export default function() {
 		每个node受到两个力
 			弹簧力 Fs		
 	*/
-	function force(){
+	function force( alpha ){
+		console.log("alpha" ,alpha)
 		// Fs = 
-		var t1 = new Date().getTime()
+		// var t1 = new Date().getTime()
 		spring()
-		var t2 = new Date().getTime()
-		console.log(t2 -t1)
+		// var t2 = new Date().getTime()
+		// console.log(t2 -t1)
 		charge()
-		var t3 = new Date().getTime()
-		console.log(t3 -t2)
+		// var t3 = new Date().getTime()
+		// console.log(t3 -t2)
 		velocity()
-		var t4 = new Date().getTime()
-		console.log(t4 -t3)
-		console.log(segNodes)
-		console.log(nodes)
+		// var t4 = new Date().getTime()
+		// console.log(t4 -t3)
+		// console.log(segNodes)
+		// console.log(nodes)
+	    // console.log('-------------------------')
+		return nodes	
 	}
 	function charge(){
 		var i,j,
@@ -72,8 +75,9 @@ export default function() {
 			connnects  = node.connets
 			if(!connnects)  continue  //该节点没有 link 连接
 			if(connnects.length != 2) continue
-			prev = connnects[0]['target']  //与创建connect时的顺序有关
-			next = connnects[1]['source']
+			prev = connnects[0]['source']  //与创建connect时的顺序有关
+			next = connnects[1]['target']
+			// console.log(prev == next )
 			kp = node.kp
 			node['Fs_x'] = kp*( prev.x - node.x + next.x - node.x)
 			node['Fs_y'] = kp*( prev.y - node.y + next.y - node.y)
@@ -83,13 +87,13 @@ export default function() {
 		var i ,
 			n = nodes.length,
 			node,
-			theta = 1000
+			theta = 100
 
 		for(i = 0;i < n ;i++){
 			node = nodes[i]
 			if(node.Fe_x == undefined) continue
-			node['vx'] = node['Fe_x'] /theta  + node['Fs_x']*theta
-			node['vy'] = node['Fe_y'] /theta  + node['Fs_y']*theta
+			node['vx'] = node['Fe_x'] /theta  + node['Fs_x'] /theta
+			node['vy'] = node['Fe_y'] /theta  + node['Fs_y'] /theta
 		}
 	}
 	function initialize(){
@@ -168,10 +172,9 @@ export default function() {
 		nodes = _nodes
 		initialize()
 	}
-	force.links = function(_) {
-		links = _
-		initialize()
-	};
+	  force.links = function(_) {
+	    return arguments.length ? (links = _, initialize(), force) : links;
+	  };
 	return force
 }
 
