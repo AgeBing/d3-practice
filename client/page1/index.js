@@ -155,54 +155,67 @@ function processData(values) {
   // console.log(airports, flights.slice(0,10));
 
 
-var svg  = d3.select("svg");
-let f =  fdebForce() 
+	var svg  = d3.select("svg");
+	let f =  fdebForce() 
 
 	let simulation = forceSimulation()
-    .alphaDecay(0.1)
+    // .alphaDecay(0.6)
+    .alphaDecay(1 - Math.pow(0.001, 1 / 1000))
     .force('fdeb' , f )
     .on('tick',function(){
-        // console.log(m)
-        // console.log(simulation.nodes())
-        svg.selectAll('circle').remove()
+    	if(simulation.alpha() < 0.9 ){
+	       	if(svg.selectAll('line').empty()){
+		      svg.selectAll("circle")
+		        .data(simulation.nodes().slice(0,50))
+		        .enter()
+		        .append("circle")
+		        .attr("r",  2 )
+		        .attr("cx", d => d.x) // calculated on load
+		        .attr("cy", d => d.y) // calculated on load
+				.style('fill',d => {
+					if(d.name){
+						return 'red'
+					}
+					return 'white'
+				})
+				.style('stroke','gray')
+				.style('opacity',0.5)
+				.style('display',d=>{
+					if(d.name){
+						return 'block'
+					}
+					return 'none'
+				})
 
-      svg.selectAll("circle.airport")
-        .data(simulation.nodes())
-        .enter()
-        .append("circle")
-        .attr("r",  1 )
-        .attr("cx", d => d.x) // calculated on load
-        .attr("cy", d => d.y) // calculated on load
-        .attr("class", "airport")
+			 	// f.links().splice(0,1000)
+			   svg.selectAll("line")
+			        .data(f.links())
+			        .enter()
+			        .append("line")
+			        .attr('x1',d=>d.source.x)
+			        .attr('y1',d=>d.source.y)
+			        .attr('x2',d=>d.target.x)
+			        .attr('y2',d=>d.target.y)
+			        .style('stroke','gray')
+			        .style('opacity',0.2)
+			        .style('fill','gray')
+			}else{
+				svg.selectAll("circle")
+			        .attr("cx", d => d.x) // calculated on load
+	       			 .attr("cy", d => d.y) // calculated on load
 
-
-      let line = d3.line()
-        .curve(d3.curveBundle)
-        .x(airport => airport.x)
-        .y(airport => airport.y);
-
-svg.selectAll('line').remove()
-      let links = svg.selectAll("path.flight")
-        .data(f.links())
-        .enter()
-        .append("line")
-        .attr('x1',d=>d.source.x)
-        .attr('y1',d=>d.source.y)
-        .attr('x2',d=>d.target.x)
-        .attr('y2',d=>d.target.y)
-        .style('stroke','black')
-        .style('opacity',0.6)
-
-
-
+	       	 	svg.selectAll("line")
+	       	 		.attr('x1',d=>d.source.x)
+			        .attr('y1',d=>d.source.y)
+			        .attr('x2',d=>d.target.x)
+			        .attr('y2',d=>d.target.y)
+			}
+		}	
     })
+    .stop()
 
-
-
-
-
-	simulation.nodes(airports).force('fdeb').links(flights.slice(0,200))	
-
+	// simulation.nodes(airports).force('fdeb').links(flights.slice(0,500))
+	simulation.nodes(airports).force('fdeb').links(flights)	
 	simulation.restart()
 
 	// let a = fdebForce( )
