@@ -10,11 +10,9 @@ import  mysankey from './sankey'
 import { forceSimulation } from 'd3-force'
 
 // import * as asd from './fdeb'
-
 import { default as fdebForce } from './edge-bundling-force'
 const width = 1000
 const height = 1000
-
 require("./fdeb.scss");
 
 
@@ -29,22 +27,50 @@ require("./fdeb.scss");
 // 	s.renderLinks(svg)
 // 	s.print()
 // }
-
-
-
-
 // testSankey()
 
 
 
 
-// exit()
+var rangeConfig = {
+  'step':{
+     'min' :  0,
+     'max' :  2,
+     'step':  0.1,
+     'value': 1
+  },
+  'K' : {
+     'min' :  0,
+     'max' :  1,
+     'step':  0.001,
+     'value': 0.01
+   }
+}
+
+function initConfig(){
+  let panel = d3.select('.config')
+  for(let [name, config] of Object.entries(rangeConfig) ){
+    panel.append('label')
+      .text( name + ':' + config.value )
+      .attr('id' , 'label'+ name )
+    panel.append('input')
+      .attr('type' , 'number')
+      .attr('min' , config.min)
+      .attr('max' , config.max)
+      .attr('step' , config.step)
+      .attr('value' , config.value)
+      .attr('id' , name )
+  }
 
 
+  d3.selectAll("input")
+    .on("change", inputted);
+}
 
 
+initConfig()
 
-
+var simulation
 
 
 
@@ -158,7 +184,7 @@ function processData(values) {
 	var svg  = d3.select("svg");
 	let f =  fdebForce() 
 
-	let simulation = forceSimulation()
+	simulation = forceSimulation()
     // .alphaDecay(0.6)
     .alphaDecay(1 - Math.pow(0.001, 1 / 1000))
     .force('fdeb' , f )
@@ -214,18 +240,30 @@ function processData(values) {
     })
     .stop()
 
-	// simulation.nodes(airports).force('fdeb').links(flights.slice(0,500))
-	simulation.nodes(airports).force('fdeb').links(flights)	
-	simulation.restart()
+  let vk = d3.select('input#K').attr('value')
+  let vstep = d3.select('input#step').attr('value')
+  f.set( 'K'  , vk )
+  f.set( 'step' , vstep )
 
-	// let a = fdebForce( )
-	// a.initialize( airports ,flights )
-	// a()
-	// console.log('-------------------------')
-	// a()
-	// console.log('-------------------------')
-	// a()
+	simulation.nodes(airports).force('fdeb').links(flights.slice(0,500))
+	// simulation.nodes(airports).force('fdeb').links(flights)	
+	simulation.restart()
 }
 
 
+
+
+
+
+
+function inputted(){
+  // console.log( this.value , this.id)
+  d3.select('#label' + this.id)
+    .text(this.id + ':' +  this.value)
+
+  simulation.force('fdeb')
+    .set(this.id , this.value)
+
+   simulation.alpha(1).restart();
+}
 

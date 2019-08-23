@@ -35,7 +35,10 @@ export default function() {
 	function force( alpha ){
 		if(!nodes || !links || !segNodes)  return []
 		// console.log(segNodes)
- 		console.log("alpha" ,alpha)
+ 		console.log("alpha   " ,alpha)
+ 		console.log("K     " , K)
+ 		console.log("step  " ,step)
+
 		// Fs = 
 		// var t1 = new Date().getTime()
 		spring()
@@ -98,10 +101,10 @@ export default function() {
 
 		max = ( max == undefined || max > Math.abs(node['Fe_x'])  ) ? Math.abs(node['Fe_x']) : max
 
-		console.log('Fe max: ',max)
-		console.log('Ce max: ', cemax)
+		// console.log('Fe max: ',max)
+		// console.log('Ce max: ', cemax)
 
-		console.log('-------------------------------------------------')
+		// console.log('-------------------------------------------------')
 	}
 	function spring(){
 		var i,
@@ -129,8 +132,8 @@ export default function() {
 		}
 
 
-		console.log('Fs max: ', max)
-		console.log('kp max: ', kpmax)
+		// console.log('Fs max: ', max)
+		// console.log('kp max: ', kpmax)
 
 
 	}
@@ -165,10 +168,10 @@ export default function() {
 		segments()
 		connnects()
 		var t1 = new Date().getTime()
-		console.log('start ce')
+		// console.log('start ce')
 		initCe()
 		var t2 = new Date().getTime()
-		console.log(t2 -t1)
+		// console.log(t2 -t1)
 	}
 	function segments(){
 		//将 link 拆分成 p+1 段 , 头尾两边等比例加入 p 个点
@@ -267,6 +270,24 @@ export default function() {
 	force.links = function(_) {
 		return arguments.length ? (links = _, initialize(), force) : segeLinks;
 	};
+	force.set = function(n , v) {
+		// let params = {
+		// 	'K' : K,
+		// 	'k' : K,
+		// 	'step' : step,
+		// 	's' : step
+		// }
+		// params[n] = v
+
+		if(n == 'K' || n == 'k'){
+			K = v
+		}
+		if(n == 's' || n =='S' || n == 'step'){
+			step = v
+		}
+		// console.log(n,v,step,K)
+	};
+
 	return force
 }
 
