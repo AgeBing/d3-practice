@@ -28,7 +28,7 @@ function updateNodes(nodes,links,d3sankey){
 		nodeHeight = 40,
 		nodePadding = 10,
 		linkPadding = 40,
-		maxCount   = 3000,
+		maxCount   = 30,
 		ky    = nodeHeight / maxCount   //link 每个count 的宽度
 
 	nodes.forEach(node => {

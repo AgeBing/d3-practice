@@ -8,7 +8,7 @@ require('babel-register')({
 
 var isDev = process.env.NODE_ENV !== 'production';
 var app = express();
-var port = 3000;
+var port = 4031;
 
 app.use(express.static('image'));
 app.use(express.static('client'));
@@ -61,12 +61,12 @@ if (isDev) {
     reload(server, app);
 
     server.listen(port, function(){
-        console.log('App (dev) is now running on port 3000!');
+        console.log('App (dev) is now running on port ' + port + ' !');
     });
 } else {
     app.use(express.static(path.join(__dirname, 'public')));
     require('./server/routes')(app);
     app.listen(port, function () {
-        console.log('App (production) is now running on port 3000!');
+        console.log('App (production) is now running on port ' + port + ' !');
     });
 }

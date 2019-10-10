@@ -2,6 +2,12 @@
   https://bl.ocks.org/sjengle/2e58e83685f6d854aa40c7bc546aeb24
 */
 
+import * as d3 from 'd3';
+import * as topojson from 'topojson'
+import* as d3GeoVoronoi from 'd3-geo-voronoi'
+require('d3-delaunay')
+
+
 require("./fdeb.scss");
 
 var urls = {
@@ -18,53 +24,74 @@ var urls = {
     "https://gist.githubusercontent.com/mbostock/7608400/raw/e5974d9bba45bc9ab272d98dd7427567aafd55bc/flights.csv"
 };
 
-var svg  = d3.select("svg");
 
-var width  = parseInt(svg.attr("width"));
-var height = parseInt(svg.attr("height"));
-var hypotenuse = Math.sqrt(width * width + height * height);
+var svg,
+	width,
+	height,
+	hypotenuse,
+	projection,
+	scales,
+	g,
+	tooltip
 
-// must be hard-coded to match our topojson projection
-// source: https://github.com/topojson/us-atlas
-var projection = d3.geoAlbers().scale(1280).translate([480, 300]);
+/*
+	Main Function 
+*/
+export default function(){
+	svg  = d3.select("svg");
 
-var scales = {
-  // used to scale airport bubbles
-  airports: d3.scaleSqrt()
-    .range([4, 18]),
+	width  = parseInt(svg.attr("width"));
+	height = parseInt(svg.attr("height"));
+	hypotenuse = Math.sqrt(width * width + height * height);
 
-  // used to scale number of segments per line
-  segments: d3.scaleLinear()
-    .domain([0, hypotenuse])
-    .range([1, 10])
-};
+	// must be hard-coded to match our topojson projection
+	// source: https://github.com/topojson/us-atlas
+	projection = d3.geoAlbers().scale(1280).translate([480, 300]);
 
-// have these already created for easier drawing
-var g = {
-  basemap:  svg.select("g#basemap"),
-  flights:  svg.select("g#flights"),
-  airports: svg.select("g#airports"),
-  voronoi:  svg.select("g#voronoi")
-};
+	scales = {
+	  // used to scale airport bubbles
+	  airports: d3.scaleSqrt()
+	    .range([4, 18]),
 
-console.assert(g.basemap.size()  === 1);
-console.assert(g.flights.size()  === 1);
-console.assert(g.airports.size() === 1);
-console.assert(g.voronoi.size()  === 1);
+	  // used to scale number of segments per line
+	  segments: d3.scaleLinear()
+	    .domain([0, hypotenuse])
+	    .range([1, 10])
+	};
 
-var tooltip = d3.select("text#tooltip");
-console.assert(tooltip.size() === 1);
+	// have these already created for easier drawing
+	svg.append('g').attr('id','basemap')
+	svg.append('g').attr('id','flights')
+	svg.append('g').attr('id','airports')
+	svg.append('g').attr('id','voronoi')
+	svg.append('text').attr('id','tooltip').style('display','none')
 
-// load and draw base map
-d3.json(urls.map).then(drawMap);
+	g = {
+	  basemap:  svg.select("g#basemap"),
+	  flights:  svg.select("g#flights"),
+	  airports: svg.select("g#airports"),
+	  voronoi:  svg.select("g#voronoi")
+	};
 
-// load the airport and flight data together
-let promises = [
-  d3.csv(urls.airports, typeAirport),
-  d3.csv(urls.flights,  typeFlight)
-];
+	console.assert(g.basemap.size()  === 1);
+	console.assert(g.flights.size()  === 1);
+	console.assert(g.airports.size() === 1);
+	console.assert(g.voronoi.size()  === 1);
 
-Promise.all(promises).then(processData);
+
+	tooltip = d3.select("text#tooltip");
+	console.assert(tooltip.size() === 1);
+
+	// load and draw base map
+	d3.json(urls.map).then(drawMap);
+
+	// load the airport and flight data together
+	let promises = [
+	  d3.csv(urls.airports, typeAirport),
+	  d3.csv(urls.flights,  typeFlight)
+	];
+	Promise.all(promises).then(processData);
+}
 
 // process airport and flight data
 function processData(values) {
@@ -196,7 +223,7 @@ function drawPolygons(airports) {
   });
 
   // calculate voronoi polygons
-  let polygons = d3.geoVoronoi().polygons(geojson);
+  let polygons = d3GeoVoronoi.geoVoronoi().polygons(geojson);
   console.log(polygons);
 
   g.voronoi.selectAll("path")
@@ -309,7 +336,7 @@ function drawFlights(airports, flights) {
 // be used for simple edge bundling.
 function generateSegments(nodes, links) {
  let a = {nodes,links:links.slice(0,5)}
-  console.log( JSON.stringify(a)  )
+  // console.log( JSON.stringify(a)  )
   // generate separate graph for edge bundling
   // nodes: all nodes including control nodes
   // links: all individual segments (source to target)
@@ -419,6 +446,3 @@ function distance(source, target) {
 
   return Math.sqrt(dx2 + dy2);
 }
-
-
-export default a = 1

@@ -22,12 +22,6 @@ export default function() {
 		step = 1,
 		CeMap = []
 
-
-
-
-
-
-
 	/*
 		每个node受到两个力
 			弹簧力 Fs		
@@ -128,7 +122,6 @@ export default function() {
 		
 			max = ( max == undefined || max > Math.abs(node['Fs_x'])  ) ? Math.abs(node['Fs_x']) : max
 			kpmax = ( kpmax == undefined || kpmax > kp ) ? kp : kpmax
-
 		}
 
 
@@ -213,7 +206,6 @@ export default function() {
 				prev = _node
 
 				nodes.push( _node )
-				_segNodes.push( _node )
 				_segeLinks.push(_link)
 
 			}
@@ -222,10 +214,8 @@ export default function() {
 				target : target
 			}
 			_segeLinks.push(_link)
-
 		}
 
-		segNodes = _segNodes
 		segeLinks = _segeLinks
 	}
 	/*
