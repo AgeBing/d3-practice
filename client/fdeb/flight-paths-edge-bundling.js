@@ -6,8 +6,6 @@ import * as d3 from 'd3';
 import * as topojson from 'topojson'
 import* as d3GeoVoronoi from 'd3-geo-voronoi'
 require('d3-delaunay')
-
-
 require("./fdeb.scss");
 
 var urls = {
@@ -160,6 +158,8 @@ function processData(values) {
 
 // draws the underlying map
 function drawMap(map) {
+  console.log('map data',map)
+
   // remove non-continental states
   map.objects.states.geometries = map.objects.states.geometries.filter(isContinental);
 

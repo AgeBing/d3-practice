@@ -12,6 +12,7 @@ var port = 3006;
 
 app.use(express.static('image'));
 app.use(express.static('client'));
+app.use(express.static('lib'));
 
 app.engine('html', consolidate.ejs);
 app.set('view engine', 'html');

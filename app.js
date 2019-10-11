@@ -12,6 +12,7 @@ var port = 4031;
 
 app.use(express.static('image'));
 app.use(express.static('client'));
+app.use('/lib', express.static(__dirname + '/lib'));
 
 app.engine('html', consolidate.ejs);
 app.set('view engine', 'html');

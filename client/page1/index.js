@@ -5,30 +5,38 @@ require("./index.scss");
 import { default as fdeb_refer_run } from '../fdeb/flight-paths-edge-bundling.js'
 import { default as fdeb_diy_run } from '../fdeb/fdeb-diy.js'
 import { default as sankey_run } from '../sankey/index.js'
+import { default as odmap_run } from '../odmap/map.js'
+
 
 // fdeb_refer_run()
 // sankey_run()
+
+odmap_run()
 
 var layouts = [
   {
     name : '桑基图',
     value : 'sankey',
     func : sankey_run,
-    checked : true
+    // checked : true
   },
   {
     name : '边捆绑「参考」',
     value: 'fdeb',
-    func : fdeb_refer_run
+    func : fdeb_refer_run,
   },
   {
     name : '边捆绑「DIY」',
     value: 'fdeb-diy',
     func : fdeb_diy_run
+  },
+  {
+    name : 'OD Map',
+    value: 'odmap',
+    func : odmap_run,
+    checked : true
   }
 ]
-
-sankey_run()
 
 
 layouts.forEach((layout)=>{
