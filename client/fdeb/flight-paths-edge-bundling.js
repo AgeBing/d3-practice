@@ -134,7 +134,7 @@ function processData(values) {
 
   // keep only the top airports
   old = airports.length;
-  airports = airports.slice(0, 50);
+  airports = airports.slice(0, 33);
   console.log(" removed: " + (old - airports.length) + " airports with low outgoing degree");
 
   // done filtering airports can draw

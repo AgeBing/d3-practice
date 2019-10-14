@@ -134,8 +134,8 @@ function processData(values){
 
 	// d3.csv("data/data.csv", function(error, data){
 		od = odmap({
-			width:960,
-			height:500
+			width:950,
+			height:600
 		});
 
 	// 	console.log(data)
@@ -144,7 +144,7 @@ function processData(values){
 		od.data(odData);
 		od.toggle();
 
-		var d = od.geo(od.geo());
+		var d = od.nmap(od.nmap());
 		console.log(d)
 		// updateData(d);
 		drawGrids(d)
@@ -153,7 +153,9 @@ function processData(values){
 
 function drawGrids(d){
 
-	svg = d3.select("svg").append("g").attr("class","container");
+	svg = d3.select("svg").append("g").attr("class","container")
+		.attr('transform' , "translate(20,15)")
+
 	color = d3.scaleLinear().domain([0,d.smax])
     			.range(['rgba(255,0,0,0)', 'rgba(255,0,0,1)']);
 	//Scale for the inner rectangles
